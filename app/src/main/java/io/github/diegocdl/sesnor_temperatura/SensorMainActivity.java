@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,23 +31,14 @@ import io.github.diegocdl.sesnor_temperatura.data.DbHelper;
 import io.github.diegocdl.sesnor_temperatura.data.TempRegister;
 import io.github.diegocdl.sesnor_temperatura.data.TemperatureAdapter;
 
-public class SensorMainActivity extends AppCompatActivity implements CommunicationInterface, View.OnClickListener {
-    private static final int CONNECT_DEVICE = 1;
-    TemperatureAdapter temperatureAdapter;
-    LinearLayoutManager mLayoutManager;
-    Handler mainUIHandler;
-    DbHelper db;
+public class SensorMainActivity extends AppCompatActivity implements View.OnClickListener {
+    public static DbHelper db;
 
-    @BindView(R.id.temperature_list)
-        RecyclerView temperatureList;
+    @BindView(R.id.history)
+        Button historyBtn;
 
-    @BindView(R.id.current_temp)
-        TextView currentTemp;
-    @BindView(R.id.temp_container)
-        RelativeLayout tempContainer;
-    @BindView(R.id.floatingActionButton3)
-        FloatingActionButton connectBtn;
-
+    @BindView(R.id.connect)
+        Button connectBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,82 +46,19 @@ public class SensorMainActivity extends AppCompatActivity implements Communicati
         setContentView(R.layout.activity_sensor_main);
         ButterKnife.bind(this);
         db = new DbHelper(this);
-
         connectBtn.setOnClickListener(this);
+        historyBtn.setOnClickListener(this);
 
-        // communicate the UI thread with the connection thread
-        mainUIHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                TempRegister tr = (TempRegister) msg.obj;
-                temperatureAdapter.addElement(tr);
-                currentTemp.setText(tr.getValue() + " °C");
-                db.insert(tr);
-//                float hue = 30 + 240 * (30 - Float.parseFloat(tr.getValue())) / 60;
-//                tempContainer.setBackgroundColor(Color.HSVToColor(new float[]{hue, 100, 100}));
-            }
-        };
-        // initializes the list of temperatures
-        temperatureAdapter = new TemperatureAdapter(this);
-        mLayoutManager = new LinearLayoutManager(this);
-        temperatureList.setLayoutManager(mLayoutManager);
-        temperatureList.setAdapter(temperatureAdapter);
-
-        Intent intent = new Intent(this, SelectDeviceActivity.class);
-        startActivityForResult(intent, CONNECT_DEVICE);
-        Log.e("DB log", db.getDates().toString());
-        Log.e("DB log", db.getLogs("2017/06/14").toString());
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CONNECT_DEVICE) {
-            if(resultCode == Activity.RESULT_OK) {
-
-                String dName = data.getStringExtra(SelectDeviceActivity.SELECTED_DEVICE);
-                Log.e("fdgnfd", "fsdjfgndkg " + dName);
-                connect(dName);
-            }
-        }
-    }
-
-    public void connect(String dName) {
-        BluetoothAdapter mBluetoothAdapter = null;
-        BluetoothDevice device = null;
-        try {
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-
-            for(BluetoothDevice d : pairedDevices)
-                if(d.getName().equals(dName)) device = d;
-
-            ConnectThread connectThread = null;
-            try {
-                connectThread = new ConnectThread(device, this, mainUIHandler);
-                connectThread.start();
-            } catch (IOException e) {
-                Snackbar.make(findViewById(R.id.constraintLayout), "Dispositivo Bluetooth no emparejado aun",Snackbar.LENGTH_INDEFINITE).show();
-            }
-
-        } catch(Exception e) { }
-    }
-
-    @Override
-    public void reportConnectionError(String error) {
-
-        //Snackbar.make(findViewById(R.id.constraintLayout), error, Snackbar.LENGTH_INDEFINITE).show();
-    }
-
-    @Override
-    public void dataReceived(TempRegister tr) {
-//        currentTemp.setText(tr.getValue() + " °C");
     }
 
     @Override
     public void onClick(View view) {
-        if(view == connectBtn){
-            Intent intent = new Intent(this, SelectDeviceActivity.class);
-            startActivityForResult(intent, CONNECT_DEVICE);
+        if (view == connectBtn) {
+            Intent intent = new Intent(this, SensorCaptureActivity.class);
+            startActivity(intent);
+        } else if(view == historyBtn) {
+            Intent intent = new Intent(this, HistoryDateSelectActivity.class);
+            startActivity(intent);
         }
     }
 }

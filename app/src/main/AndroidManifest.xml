@@ -19,7 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SelectDeviceActivity"></activity>
+        <activity android:name=".SelectDeviceActivity" />
+        <activity android:name=".SensorCaptureActivity" />
+        <activity android:name=".HistoryDateSelectActivity" />
+        <activity android:name=".TempHistoryActivity"></activity>
     </application>
 
 </manifest>

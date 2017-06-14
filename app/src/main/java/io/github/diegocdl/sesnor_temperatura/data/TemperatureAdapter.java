@@ -27,6 +27,11 @@ public class TemperatureAdapter extends RecyclerView.Adapter<TemperatureAdapter.
         data = new ArrayList<>();
     }
 
+    public TemperatureAdapter(Context ctx, ArrayList<TempRegister> arrayList) {
+        this(ctx);
+        data = arrayList;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
