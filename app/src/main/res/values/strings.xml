@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Sensor De Temperatura</string>
+    <string name="title_activity_select_device">SelectDeviceActivity</string>
 </resources>

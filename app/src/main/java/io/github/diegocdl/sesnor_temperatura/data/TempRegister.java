@@ -22,6 +22,13 @@ public class TempRegister {
         this.value = value;
     }
 
+    public TempRegister(String date, String time, String value) {
+        this.date = date;
+        this.time = time;
+        this.value = value;
+    }
+
+
     public String getDate() {
         return date;
     }
@@ -44,5 +51,10 @@ public class TempRegister {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %s", date, time, value);
     }
 }
